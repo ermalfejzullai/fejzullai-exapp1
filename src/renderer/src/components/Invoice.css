@@ -1,0 +1,139 @@
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&display=swap');
+
+.page {
+    font-family: "Outfit", sans-serif;
+    font-weight: 400;
+    font-size: 16px;
+}
+
+.fejzullai {
+    text-align: center;
+    font-weight: 820;
+    font-size: 30px;
+    margin-bottom: 1px;
+}
+
+.company {
+    text-align: center;
+    font-weight: 300;
+    font-size: 22px;
+    margin-top: -2px;
+    margin-bottom: 1px;
+}
+
+.fatura {
+    text-align: center;
+    font-weight: 600;
+}
+
+.type {
+    text-align: center;
+    font-size: 14px;
+}
+
+.office {
+    text-align: center;
+    margin-bottom: -15px;
+    font-size: 14px;
+    margin-top: -17px;
+}
+
+.table {
+    margin-left: auto;
+    margin-right: auto;
+    border-collapse: collapse;
+    font-size: 11px;
+    width: 100%;
+}
+
+.table-cell {
+    padding: 10px;
+    border: 2px dashed black;
+    border-collapse: collapse;
+    font-weight: 560;
+    text-align: center;
+}
+
+.headers {
+    font-weight: 700;
+    margin: 0;
+}
+
+.thanks {
+    text-align: center;
+    font-size: 18px;
+}
+
+.phonelogo {
+    height: 13px;
+    width: 15px;
+    margin-right: 5px;
+}
+
+.ulicalogo {
+    height: 13px;
+    width: 15px;
+    margin-right: 5px;
+}
+
+.info {
+    text-align: center;
+    font-size: 12px;
+    font-style: italic;
+}
+
+.info .ulica {
+    padding-right: 52px;
+    margin-bottom: -5px;
+}
+
+.info .phoneno {
+    padding-right: 115px;
+    margin-bottom: -20px;
+}
+
+.date-and-time {
+    text-align: center;
+    margin-top: -12px;
+    font-size: 13px;
+}
+
+.totalrow {
+    border: none;
+}
+
+.totalmulticell {
+    text-align: center;
+    padding: 10px;
+    border: 2px dashed black;
+    border-collapse: collapse;
+    font-weight: 710;
+    font-size: 15px;
+}
+
+.emptycell {
+    border: none;
+}
+
+.noborder .table-cell {
+    border-top: none;
+    border-left: none;
+    border-right: none;
+}
+
+/* Print Styles for Thermal Printer (80mm width) */
+@media print {
+    @page {
+        margin: 0;
+        size: 80mm auto;
+    }
+    body {
+        margin: 0;
+        padding: 0;
+    }
+    .page {
+        width: 80mm;
+        max-width: 80mm;
+        margin: 0 auto;
+    }
+}

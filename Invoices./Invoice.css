@@ -1,0 +1,122 @@
+/* @import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap'); */
+/* @import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&family=Roboto+Condensed:ital,wght@0,100..900;1,100..900&display=swap');  */
+/* @import url('https://fonts.googleapis.com/css2?family=Poiret+One&display=swap');
+/* @import url('https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300;1,400;1,500&family=Poiret+One&display=swap'); */
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&display=swap');
+
+
+/* font-family: "Outfit", sans-serif; */
+
+/* font-family: "Montserrat", sans-serif;
+
+/* font-family: "Roboto Condensed", sans-serif; */
+
+/* font-family: "Poiret One", sans-serif; */
+
+/* font-family: "DM Mono", monospace; */
+
+
+
+.page{
+    
+    font-family: "Outfit", sans-serif;
+    font-weight: 400;
+    font-size: 16px;
+}
+.fejzullai{
+    text-align: center;
+    font-weight: 820;
+    font-size: 30px;
+    margin-bottom: 1px;
+}
+.company{
+    text-align: center;
+    font-weight: 300;
+    font-size: 22px;
+    margin-top: -2px;
+    margin-bottom: 1px;
+}
+.fatura{
+    text-align: center;
+    font-weight: 600;
+}
+.type{
+    text-align: center;
+    font-size: 14px;
+}
+.office{
+    text-align: center;
+    margin-bottom: -15px;
+    font-size: 14px;
+    margin-top: -17px;
+}
+.table{
+    margin-left: auto;
+    margin-right: auto;
+    /* border: 1px dashed black; */
+    border-collapse: collapse;
+    font-size: 11px;
+
+}
+.table-cell{
+    padding: 10px;
+    border: 2px dashed black;
+    border-collapse: collapse;
+    font-weight: 560;
+
+}
+.headers{
+    font-weight: 700;
+
+}
+
+.thanks{
+    text-align: center;
+    font-size: 18px;
+}
+.phonelogo{
+    height: 13px;
+    width: 15px;
+}
+
+
+.ulicalogo{
+    height: 13px;
+    width: 15px;
+}
+.info{
+    text-align: center;
+    font-size: 12px;
+    font-style: italic;
+}
+.info .ulica{
+    padding-right: 52px;
+    margin-bottom: -5px;
+}
+.info .phoneno{
+    padding-right: 115px;
+    margin-bottom: -20px;
+}
+
+.date-and-time{
+    text-align: center;
+    margin-top: -12px;
+    font-size: 13px;
+}
+
+.totalrow{
+    border: none;
+}
+
+.totalmulticell{
+    text-align: center;
+    padding: 10px;
+    border: 2px dashed black;
+    border-collapse: collapse;
+    font-weight: 710;
+    font-size: 15px;
+}
+
+.emptycell{
+    border: none;
+}
