@@ -43,5 +43,6 @@ publish:
   provider: github
   owner: ermalfejzullai
   repo: fejzullai-exapp1
+  releaseType: release
 electronDownload:
   mirror: https://npmmirror.com/mirrors/electron/

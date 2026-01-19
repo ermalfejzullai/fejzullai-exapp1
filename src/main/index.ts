@@ -21,6 +21,9 @@ function initAutoUpdater(): void {
   autoUpdater.verifyUpdateCodeSignature = false
   // @ts-ignore
   autoUpdater.forceCodeSigning = false
+  
+  // Allow prereleases/drafts if they are tagged
+  autoUpdater.allowPrerelease = true
 
   log.info('App starting...')
 
