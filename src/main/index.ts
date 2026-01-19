@@ -5,11 +5,30 @@ import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
 import { initDb } from './db'
 import { registerApi } from './api'
+import log from 'electron-log'
 
 function initAutoUpdater(): void {
+  autoUpdater.logger = log
+  // @ts-ignore
+  autoUpdater.logger.transports.file.level = 'info'
   autoUpdater.autoDownload = true
 
+  log.info('App starting...')
+
+  autoUpdater.on('checking-for-update', () => {
+    log.info('Checking for update...')
+  })
+  
+  autoUpdater.on('update-available', (info) => {
+    log.info('Update available.', info)
+  })
+  
+  autoUpdater.on('update-not-available', (info) => {
+    log.info('Update not available.', info)
+  })
+
   autoUpdater.on('update-downloaded', () => {
+    log.info('Update downloaded')
     dialog
       .showMessageBox({
         type: 'info',
@@ -25,10 +44,16 @@ function initAutoUpdater(): void {
   })
 
   autoUpdater.on('error', (error) => {
-    console.error('Auto-updater error:', error)
+    log.error('Auto-updater error:', error)
   })
 
+  // Check immediately
   autoUpdater.checkForUpdates()
+  
+  // Check every 1 hour
+  setInterval(() => {
+    autoUpdater.checkForUpdates()
+  }, 60 * 60 * 1000)
 }
 
 function createWindow(): void {

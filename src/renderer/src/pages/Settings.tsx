@@ -7,7 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '.
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../components/ui/table';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogTrigger } from '../components/ui/dialog';
 import { AppSettings, User } from '@shared/types';
-import { Save, Trash2, UserPlus } from 'lucide-react';
+import { Save, Trash2, UserPlus, RotateCcw } from 'lucide-react';
 import { useAuthStore } from '../store/useAuthStore';
 
 export function Settings() {
@@ -25,9 +25,13 @@ export function Settings() {
 
   useEffect(() => {
       window.api.getSettings().then(setSettings);
-      window.api.getPrinters().then(setPrinters);
+      refreshPrinters();
       fetchUsers();
   }, []);
+
+  const refreshPrinters = () => {
+      window.api.getPrinters().then(setPrinters);
+  };
 
   const fetchUsers = () => {
       window.api.getUsers().then(setUsers);
@@ -79,7 +83,12 @@ export function Settings() {
             </CardHeader>
             <CardContent className="space-y-4">
                 <div className="space-y-2">
-                    <Label>Default Printer</Label>
+                    <div className="flex justify-between items-center">
+                        <Label>Default Printer</Label>
+                        <Button variant="ghost" size="sm" onClick={refreshPrinters} className="h-6 gap-1 text-muted-foreground">
+                            <RotateCcw className="h-3 w-3" /> Refresh
+                        </Button>
+                    </div>
                     <Select value={settings.printerName} onValueChange={(val) => handleChange('printerName', val)}>
                       <SelectTrigger>
                           <SelectValue placeholder="Select a printer" />
