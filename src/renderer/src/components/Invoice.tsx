@@ -14,15 +14,11 @@ interface InvoiceProps {
     type: string;
     details: InvoiceDetail[];
     total: string;
-    officeInfo?: {
-        officeName?: string;
-        address?: string;
-        phone?: string;
-    };
+    serial: string;
 }
 
 export const Invoice = React.forwardRef<HTMLDivElement, InvoiceProps>((props, ref) => {
-    const { type, details, total, officeInfo } = props;
+    const { type, details, total, serial } = props;
     const [dateTime, setDateTime] = useState(new Date());
 
     useEffect(() => {
@@ -32,28 +28,29 @@ export const Invoice = React.forwardRef<HTMLDivElement, InvoiceProps>((props, re
         return () => clearInterval(intervalId);
     }, []);
 
-    const formatNumber = (val: number) => val.toFixed(2);
+    const formatAmount = (val: number) => val.toFixed(2).replace(/\.00$/, '');
+    const formatRate = (val: number) => val.toFixed(2);
+    const formatTotal = (val: number) => new Intl.NumberFormat('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(val);
 
     const isBuy = type === 'BUY' || type === 'MULTI';
     const typeLabel = isBuy ? 'Blerje/Купувам' : 'Shitje/Продавам';
-    const totalHeader = isBuy ? 'Totali Вкупно MKD' : 'Totali Вкупно EUR/Foreign';
 
     return (
         <div ref={ref}>
             <div className='page'>
                 <p style={{ textAlign: 'center' }}>--------------------------------------</p>
                 <p className='office'>Money & Crypto Exchange Office</p>
-                <p className='fejzullai'>{officeInfo?.officeName?.split(' ')[0] || 'FEJZULLAI'}</p>
-                <p className='company'>{officeInfo?.officeName?.split(' ').slice(1).join(' ') || 'COMPANY'}</p>
+                <p className='fejzullai'>FEJZULLAI</p>
+                <p className='company'>COMPANY</p>
                 
                 <div className='info'>
                     <p className='ulica'>
                         <img src={marker} className='ulicalogo' alt="loc" /> 
-                        {officeInfo?.address || 'Ul/Rr.Brakja Ginoski 135'}
+                        Ul/Rr.Brakja Ginoski 135
                     </p>
                     <p className='phoneno'>
                         <img src={phonelogo} className='phonelogo' alt="phone" /> 
-                        {officeInfo?.phone || '070 378 645'}
+                        070 378 645
                     </p>
                 </div>
                 
@@ -64,18 +61,18 @@ export const Invoice = React.forwardRef<HTMLDivElement, InvoiceProps>((props, re
                 <table className='table'>
                     <tbody>
                         <tr className='noborder'>
-                            <td className='table-cell'><p className='headers'>Valuta Валута</p></td>
-                            <td className='table-cell'><p className='headers'>Shuma Износ</p></td>
-                            <td className='table-cell'><p className='headers'>Kursi Курс</p></td>
-                            <td className='table-cell'><p className='headers'>{totalHeader}</p></td>
+                            <td className='table-cell'><p className='headers'>Valuta<br />Валута</p></td>
+                            <td className='table-cell'><p className='headers'>Shuma<br />Износ</p></td>
+                            <td className='table-cell'><p className='headers'>Kursi<br />Курс</p></td>
+                            <td className='table-cell'><p className='headers'>Totali<br />Вкупно<br />MKD</p></td>
                         </tr>
 
                         {details.map((row, idx) => (
                             <tr key={idx}>
                                 <td className='table-cell'>{row.currency}</td>
-                                <td className='table-cell'>{formatNumber(row.amount)}</td>
-                                <td className='table-cell'>{formatNumber(row.rate)}</td>
-                                <td className='table-cell'>{formatNumber(row.mkd_equivalent)}</td>
+                                <td className='table-cell'>{formatAmount(row.amount)}</td>
+                                <td className='table-cell'>{formatRate(row.rate)}</td>
+                                <td className='table-cell'>{formatTotal(row.mkd_equivalent)}</td>
                             </tr>
                         ))}
 
@@ -85,7 +82,7 @@ export const Invoice = React.forwardRef<HTMLDivElement, InvoiceProps>((props, re
                                 <td className='emptycell'></td>
                                 <td className='emptycell'></td>
                                 <td className='emptycell'></td>
-                                <td className='totalmulticell'>{total}</td>
+                                <td className='totalmulticell'>{formatTotal(parseFloat(total))}</td>
                             </tr>
                         )}
                     </tbody>
@@ -95,6 +92,9 @@ export const Invoice = React.forwardRef<HTMLDivElement, InvoiceProps>((props, re
                 <p className='date-and-time'>
                     {dateTime.toLocaleDateString('en-GB')}{' '} 
                     {dateTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false })}
+                </p>
+                <p style={{ textAlign: 'center', fontSize: '10px', color: '#666', marginTop: '5px' }}>
+                    Serial: {serial}
                 </p>
             </div>
         </div>

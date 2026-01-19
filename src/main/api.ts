@@ -14,7 +14,7 @@ export function registerApi() {
     const match = await bcrypt.compare(password, user.password_hash);
     if (match) {
       db.prepare('UPDATE users SET last_login = CURRENT_TIMESTAMP WHERE id = ?').run(user.id);
-      return { success: true, user: { id: user.id, username: user.username } };
+      return { success: true, user: { id: user.id, username: user.username, role: user.role } };
     } else {
       return { success: false, message: 'Invalid password' };
     }
@@ -26,8 +26,75 @@ export function registerApi() {
      if (count.count > 0) return { success: false, message: 'Admin already exists' };
 
      const hash = await bcrypt.hash(password, 10);
-     db.prepare('INSERT INTO users (username, password_hash) VALUES (?, ?)').run(username, hash);
+     db.prepare("INSERT INTO users (username, password_hash, role) VALUES (?, ?, 'admin')").run(username, hash);
      return { success: true };
+  });
+
+  ipcMain.handle('get-users', () => {
+    return db.prepare('SELECT id, username, role, created_at, last_login FROM users').all();
+  });
+
+  ipcMain.handle('add-user', async (_, { username, password, adminId }) => {
+    // Verify admin
+    const admin = db.prepare('SELECT role FROM users WHERE id = ?').get(adminId) as any;
+    if (!admin || admin.role !== 'admin') {
+        return { success: false, message: 'Unauthorized: Only admins can add users.' };
+    }
+
+    const existing = db.prepare('SELECT id FROM users WHERE username = ?').get(username);
+    if (existing) return { success: false, message: 'Username already exists' };
+
+    const hash = await bcrypt.hash(password, 10);
+    // New users are always role 'user'
+    const info = db.prepare("INSERT INTO users (username, password_hash, role) VALUES (?, ?, 'user')").run(username, hash);
+    return { success: true, id: info.lastInsertRowid };
+  });
+
+  ipcMain.handle('delete-user', (_, { userId, adminId }) => {
+    // Verify admin
+    const admin = db.prepare('SELECT role FROM users WHERE id = ?').get(adminId) as any;
+    if (!admin || admin.role !== 'admin') {
+        return { success: false, message: 'Unauthorized: Only admins can delete users.' };
+    }
+    
+    // Check target user
+    const targetUser = db.prepare('SELECT username FROM users WHERE id = ?').get(userId) as any;
+    if (!targetUser) return { success: false, message: 'User not found' };
+
+    if (targetUser.username === 'axiom') {
+        return { success: false, message: 'Cannot delete the Super Admin.' };
+    }
+
+    // Prevent deleting self (redundant if axiom check covers it, but good for safety)
+    if (userId === adminId) {
+        return { success: false, message: 'Cannot delete yourself.' };
+    }
+
+    // Reassign or Nullify references to avoid Foreign Key constraints
+    db.prepare('UPDATE exchange_rates SET updated_by = NULL WHERE updated_by = ?').run(userId);
+    db.prepare('UPDATE rate_history SET changed_by = NULL WHERE changed_by = ?').run(userId);
+    db.prepare('UPDATE transactions SET user_id = NULL WHERE user_id = ?').run(userId);
+
+    db.prepare('DELETE FROM users WHERE id = ?').run(userId);
+    return { success: true };
+  });
+
+  ipcMain.handle('clear-transactions', (_, { adminId }) => {
+    // Verify admin
+    const admin = db.prepare('SELECT role FROM users WHERE id = ?').get(adminId) as any;
+    if (!admin || admin.role !== 'admin') {
+        return { success: false, message: 'Unauthorized: Only admins can clear history.' };
+    }
+
+    // Because of ON DELETE CASCADE in transaction_details (if enabled), deleting transactions might be enough?
+    // Wait, in `db.ts` I saw: `FOREIGN KEY (transaction_id) REFERENCES transactions(id) ON DELETE CASCADE`.
+    // BUT `better-sqlite3` needs `PRAGMA foreign_keys = ON;` to be executed on connection.
+    // `db.ts` only sets WAL mode. `db.pragma('journal_mode = WAL');`.
+    // I should enable foreign keys there, OR manually delete details first.
+    // Manually deleting is safer if unsure.
+    db.prepare('DELETE FROM transaction_details').run();
+    db.prepare('DELETE FROM transactions').run();
+    return { success: true };
   });
   
   ipcMain.handle('check-users-exist', () => {
@@ -139,11 +206,15 @@ export function registerApi() {
       }));
   });
 
-  ipcMain.handle('get-settings', () => store.get('settings', { officeName: '', address: '', phone: '' }));
+  ipcMain.handle('get-settings', () => store.get('settings', {}));
   
   ipcMain.handle('save-settings', (_, settings) => {
     store.set('settings', settings);
     return { success: true };
+  });
+
+  ipcMain.handle('get-printers', async (event) => {
+    return await event.sender.getPrintersAsync();
   });
 
   ipcMain.handle('print-invoice', async (_, htmlContent) => {
@@ -161,12 +232,16 @@ export function registerApi() {
       await printWindow.loadURL(`data:text/html;charset=utf-8,${encodeURIComponent(htmlContent)}`);
       
       return new Promise((resolve) => {
-          // silent: false opens the system dialog
+          // Retrieve settings to check for preferred printer
+          const settings: any = store.get('settings');
+          const printerName = settings?.printerName;
+
           // Configure for thermal printer (80mm width, no margins)
           // Page size is controlled via CSS @page { size: 80mm auto; }
           const doPrint = () => {
               printWindow.webContents.print({
-                  silent: false,
+                  silent: !!printerName, // Silent if printer is set
+                  deviceName: printerName, // Use specific printer if set
                   printBackground: true,
                   landscape: false,
                   margins: { marginType: 'none' }

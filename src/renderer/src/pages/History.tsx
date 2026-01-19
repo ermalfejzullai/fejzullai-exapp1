@@ -5,7 +5,8 @@ import { Button } from '../components/ui/button';
 import { Card, CardHeader, CardContent } from '../components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../components/ui/select';
 import { Transaction } from '@shared/types';
-import { FileDown } from 'lucide-react';
+import { FileDown, Trash2 } from 'lucide-react';
+import { useAuthStore } from '../store/useAuthStore';
 
 const CURRENCIES = ['ALL', 'EUR', 'CHF', 'USD', 'GBP', 'AUD', 'CAD', 'TRY'];
 const TYPES = ['ALL', 'BUY', 'SELL', 'SELL_MKD', 'MULTI'];
@@ -20,6 +21,7 @@ export function History() {
       serialKey: ''
   });
   const [expandedId, setExpandedId] = useState<number | null>(null);
+  const currentUser = useAuthStore(state => state.user);
 
   useEffect(() => {
       loadTransactions();
@@ -61,14 +63,38 @@ export function History() {
       link.click();
       document.body.removeChild(link);
   };
+  
+  const handleClearHistory = async () => {
+      if (!currentUser) return;
+      if (confirm('Are you sure you want to delete ALL transaction history? This cannot be undone.')) {
+          try {
+              const res = await window.api.clearTransactions({ adminId: currentUser.id });
+              if (res.success) {
+                  loadTransactions();
+              } else {
+                  alert(res.message);
+              }
+          } catch (error) {
+              console.error(error);
+              alert('Failed to clear history. See console for details.');
+          }
+      }
+  };
 
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <h2 className="text-3xl font-bold tracking-tight">Transaction History</h2>
-        <Button variant="outline" onClick={handleExport} className="gap-2">
-            <FileDown className="h-4 w-4" /> Export CSV
-        </Button>
+        <div className="flex gap-2">
+            {currentUser?.role === 'admin' && (
+                <Button variant="destructive" onClick={handleClearHistory} className="gap-2">
+                    <Trash2 className="h-4 w-4" /> Clear History
+                </Button>
+            )}
+            <Button variant="outline" onClick={handleExport} className="gap-2">
+                <FileDown className="h-4 w-4" /> Export CSV
+            </Button>
+        </div>
       </div>
 
       <Card>

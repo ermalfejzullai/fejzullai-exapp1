@@ -6,12 +6,17 @@ const api = {
   login: (credentials) => ipcRenderer.invoke('login', credentials),
   registerAdmin: (credentials) => ipcRenderer.invoke('register-admin', credentials),
   checkUsersExist: () => ipcRenderer.invoke('check-users-exist'),
+  getUsers: () => ipcRenderer.invoke('get-users'),
+  addUser: (data) => ipcRenderer.invoke('add-user', data),
+  deleteUser: (data) => ipcRenderer.invoke('delete-user', data),
+  clearTransactions: (data) => ipcRenderer.invoke('clear-transactions', data),
   getRates: () => ipcRenderer.invoke('get-rates'),
   updateRates: (data) => ipcRenderer.invoke('update-rates', data),
   saveTransaction: (data) => ipcRenderer.invoke('save-transaction', data),
   getTransactions: (filters) => ipcRenderer.invoke('get-transactions', filters),
   getSettings: () => ipcRenderer.invoke('get-settings'),
   saveSettings: (settings) => ipcRenderer.invoke('save-settings', settings),
+  getPrinters: () => ipcRenderer.invoke('get-printers'),
   printInvoice: (html) => ipcRenderer.invoke('print-invoice', html)
 }
 

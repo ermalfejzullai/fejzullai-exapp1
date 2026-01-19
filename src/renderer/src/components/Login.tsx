@@ -30,14 +30,14 @@ export function Login() {
             setError('Admin created! Please login.');
             setPassword('');
         } else {
-            setError(res.message);
+            setError(res.message || 'Error creating admin');
         }
     } else {
         const res = await window.api.login({ username, password });
         if (res.success) {
             login(res.user);
         } else {
-            setError(res.message);
+            setError(res.message || 'Invalid credentials');
         }
     }
   };

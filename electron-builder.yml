@@ -1,5 +1,5 @@
-appId: com.electron.app
-productName: fejzullai-exapp
+appId: com.exchange.app
+productName: Exchange App
 directories:
   buildResources: build
 files:

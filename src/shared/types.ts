@@ -1,6 +1,12 @@
+export interface AuthCredentials {
+  username: string;
+  password: string;
+}
+
 export interface User {
   id: number;
   username: string;
+  role: 'admin' | 'user';
   created_at: string;
   last_login?: string;
 }
@@ -43,7 +49,5 @@ export interface TransactionDetail {
 }
 
 export interface AppSettings {
-  officeName: string;
-  address: string;
-  phone: string;
+  printerName?: string;
 }

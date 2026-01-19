@@ -32,7 +32,6 @@ export function Home() {
   const [lastSerial, setLastSerial] = useState('');
   const [invoiceOpen, setInvoiceOpen] = useState(false);
   const [currentTransaction, setCurrentTransaction] = useState<{type: string, serial: string, total: string, details: any[]} | null>(null);
-  const [officeInfo, setOfficeInfo] = useState<any>(null);
 
   const DEFAULT_CURRENCIES = ['EUR', 'CHF', 'USD', 'GBP', 'AUD', 'CAD', 'TRY', 'ALL'];
 
@@ -55,7 +54,6 @@ export function Home() {
             setRates(mergedRates);
         }
     });
-    window.api.getSettings().then(setOfficeInfo);
   }, []);
 
   const getRate = (currency: string) => rates.find(r => r.currency === currency);
@@ -369,7 +367,7 @@ export function Home() {
                     type={currentTransaction.type}
                     details={currentTransaction.details}
                     total={currentTransaction.total}
-                    officeInfo={officeInfo}
+                    serial={currentTransaction.serial}
                  />
                )}
            </div>

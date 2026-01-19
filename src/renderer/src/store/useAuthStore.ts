@@ -1,9 +1,5 @@
 import { create } from 'zustand';
-
-interface User {
-  id: number;
-  username: string;
-}
+import { User } from '@shared/types';
 
 interface AuthState {
   user: User | null;
