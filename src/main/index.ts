@@ -6,6 +6,9 @@ import icon from '../../resources/icon.png?asset'
 import { initDb } from './db'
 import { registerApi } from './api'
 import log from 'electron-log'
+import Store from 'electron-store'
+
+const store = new Store()
 
 function initAutoUpdater(): void {
   autoUpdater.logger = log
@@ -45,6 +48,7 @@ function initAutoUpdater(): void {
 
   autoUpdater.on('error', (error) => {
     log.error('Auto-updater error:', error)
+    dialog.showErrorBox('Update Error', 'An error occurred while updating: ' + (error.message || 'Unknown error'))
   })
 
   // Check immediately
@@ -112,6 +116,19 @@ app.whenReady().then(() => {
 
   initDb()
   registerApi()
+  
+  // Check for successful update
+  const currentVersion = app.getVersion()
+  const lastVersion = store.get('version')
+  
+  if (lastVersion && lastVersion !== currentVersion) {
+      dialog.showMessageBox({
+          type: 'info',
+          title: 'Update Successful',
+          message: `The application has been updated to version ${currentVersion}.`
+      })
+  }
+  store.set('version', currentVersion)
 
   // Default open or close DevTools by F12 in development
   // and ignore CommandOrControl + R in production.

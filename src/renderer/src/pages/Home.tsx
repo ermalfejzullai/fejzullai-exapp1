@@ -152,9 +152,9 @@ export function Home() {
           <style>
             @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&display=swap');
             * { box-sizing: border-box; }
-            html, body { margin: 0; padding: 0; background: white; }
+            html, body { margin: 0; padding: 0; background: white; width: 80mm; }
             body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-            .page { font-family: "Outfit", sans-serif; font-weight: 400; font-size: 16px; width: 80mm; max-width: 80mm; margin: 0 auto; }
+            .page { font-family: "Outfit", sans-serif; font-weight: 400; font-size: 16px; width: 72mm; max-width: 72mm; margin: 0 auto; }
             .fejzullai { text-align: center; font-weight: 820; font-size: 30px; margin-bottom: 1px; }
             .company { text-align: center; font-weight: 300; font-size: 22px; margin-top: -2px; margin-bottom: 1px; }
             .fatura { text-align: center; font-weight: 600; }
