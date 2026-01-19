@@ -15,6 +15,12 @@ function initAutoUpdater(): void {
   // @ts-ignore
   autoUpdater.logger.transports.file.level = 'info'
   autoUpdater.autoDownload = true
+  
+  // Disable code signing verification for unsigned builds (GitHub Releases)
+  // @ts-ignore
+  autoUpdater.verifyUpdateCodeSignature = false
+  // @ts-ignore
+  autoUpdater.forceCodeSigning = false
 
   log.info('App starting...')
 
