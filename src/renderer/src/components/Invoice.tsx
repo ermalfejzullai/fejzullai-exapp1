@@ -50,7 +50,7 @@ export const Invoice = React.forwardRef<HTMLDivElement, InvoiceProps>((props, re
     return (
         <div ref={ref}>
             <div className='page'>
-                <p style={{ textAlign: 'center' }}>--------------------------------------</p>
+                <p style={{ textAlign: 'center' }}>------------------------------------</p>
                 <p className='office'>Money & Crypto Exchange Office</p>
                 <p className='fejzullai'>FEJZULLAI</p>
                 <p className='company'>COMPANY</p>
@@ -66,7 +66,7 @@ export const Invoice = React.forwardRef<HTMLDivElement, InvoiceProps>((props, re
                     </p>
                 </div>
                 
-                <p style={{ textAlign: 'center' }}>--------------------------------------</p>
+                <p style={{ textAlign: 'center' }}>------------------------------------</p>
                 <p className='fatura'>Faturë/Сметка</p>
                 <p className='type'>{typeLabel}</p>
 
