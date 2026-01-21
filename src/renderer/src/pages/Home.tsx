@@ -141,6 +141,8 @@ export function Home() {
     const invoiceContent = document.getElementById('invoice-to-print')?.innerHTML;
     if (!invoiceContent) return;
 
+    setInvoiceOpen(false);
+
     const baseHref = document.baseURI;
     const html = `
       <!doctype html>
