@@ -6,6 +6,9 @@ import Store from 'electron-store';
 
 const store = new Store();
 
+// Singleton print window reference to avoid recreating overhead
+let printWindow: BrowserWindow | null = null;
+
 export function registerApi() {
   ipcMain.handle('login', async (_, { username, password }) => {
     const user = db.prepare('SELECT * FROM users WHERE username = ?').get(username) as any;
@@ -219,15 +222,18 @@ export function registerApi() {
 
   ipcMain.handle('print-invoice', async (_, htmlContent) => {
       // 80mm thermal paper = ~302px at 96 DPI
-      const printWindow = new BrowserWindow({ 
-          show: false, 
-          width: 302, 
-          height: 800,
-          webPreferences: {
-              nodeIntegration: false,
-              contextIsolation: true
-          }
-      });
+      // Optimization: Reuse existing window if available
+      if (!printWindow || printWindow.isDestroyed()) {
+        printWindow = new BrowserWindow({ 
+            show: false, 
+            width: 302, 
+            height: 800,
+            webPreferences: {
+                nodeIntegration: false,
+                contextIsolation: true
+            }
+        });
+      }
       
       await printWindow.loadURL(`data:text/html;charset=utf-8,${encodeURIComponent(htmlContent)}`);
       
@@ -239,6 +245,8 @@ export function registerApi() {
           // Configure for thermal printer (80mm width, no margins)
           // Page size is controlled via CSS @page { size: 80mm auto; }
           const doPrint = () => {
+              if (!printWindow || printWindow.isDestroyed()) return;
+
               printWindow.webContents.print({
                   silent: !!printerName, // Silent if printer is set
                   deviceName: printerName, // Use specific printer if set
@@ -246,17 +254,20 @@ export function registerApi() {
                   landscape: false,
                   margins: { marginType: 'none' }
               }, (success, errorType) => {
-                  printWindow.close();
+                  // Do NOT close the window here to keep it warm for next print
+                  // printWindow.close(); 
                   if (!success) console.log(errorType);
                   resolve(success);
               });
           };
 
           // Wait for fonts/assets to settle before printing to avoid layout shifts.
-          printWindow.webContents
-              .executeJavaScript('document.fonts ? document.fonts.ready : Promise.resolve()')
-              .then(doPrint)
-              .catch(doPrint);
+          if (printWindow && !printWindow.isDestroyed()) {
+            printWindow.webContents
+                .executeJavaScript('document.fonts ? document.fonts.ready : Promise.resolve()')
+                .then(doPrint)
+                .catch(doPrint);
+          }
       });
   });
 }
